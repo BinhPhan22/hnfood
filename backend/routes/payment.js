@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const QRCode = require('qrcode');
 const Order = require('../models/Order');
 const WalletTransaction = require('../models/WalletTransaction');
-const { protect } = require('../middleware/auth');
+const { protect } = require('../middleware/authMiddleware');
 
 // VietQR Configuration
 const VIETQR_CONFIG = {

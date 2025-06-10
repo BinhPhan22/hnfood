@@ -18,6 +18,7 @@ import Promotions from './pages/Promotions';
 import PromotionForm from './pages/PromotionForm';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import WebsiteSettings from './pages/WebsiteSettings';
 
 // Protected route component
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -71,7 +72,10 @@ function App() {
           
           {/* Analytics */}
           <Route path="analytics" element={<Analytics />} />
-          
+
+          {/* Website Settings */}
+          <Route path="website-settings" element={<WebsiteSettings />} />
+
           {/* Settings */}
           <Route path="settings" element={<Settings />} />
         </Route>

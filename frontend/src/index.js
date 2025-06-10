@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import './styles/index.css';
+import './i18n'; // Initialize i18n
 import App from './App';
 import { store } from './store/store';
 import reportWebVitals from './reportWebVitals';

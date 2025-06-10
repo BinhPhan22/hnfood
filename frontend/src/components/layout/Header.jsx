@@ -1,22 +1,25 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  ShoppingCartIcon, 
-  UserIcon, 
-  Bars3Icon, 
+import { useTranslation } from 'react-i18next';
+import {
+  ShoppingCartIcon,
+  UserIcon,
+  Bars3Icon,
   XMarkIcon,
-  MagnifyingGlassIcon 
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
 import { logout } from '../../store/slices/authSlice';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  const { t } = useTranslation();
+
   const { user } = useSelector((state) => state.auth);
   const { itemCount } = useSelector((state) => state.cart);
 
@@ -34,10 +37,10 @@ const Header = () => {
   };
 
   const navigation = [
-    { name: 'Trang chủ', href: '/' },
-    { name: 'Sản phẩm', href: '/products' },
-    { name: 'Về chúng tôi', href: '/about' },
-    { name: 'Liên hệ', href: '/contact' },
+    { name: t('navigation.home'), href: '/' },
+    { name: t('navigation.products'), href: '/products' },
+    { name: t('navigation.about'), href: '/about' },
+    { name: t('navigation.contact'), href: '/contact' },
   ];
 
   return (
@@ -70,7 +73,7 @@ const Header = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Tìm kiếm sản phẩm..."
+                placeholder={t('products.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -81,6 +84,8 @@ const Header = () => {
 
           {/* Right side icons */}
           <div className="flex items-center space-x-4">
+            {/* Language Switcher */}
+            <LanguageSwitcher />
             {/* Cart */}
             <Link to="/cart" className="relative p-2 text-gray-700 hover:text-primary-600">
               <ShoppingCartIcon className="h-6 w-6" />
@@ -106,25 +111,25 @@ const Header = () => {
                       to="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Thông tin cá nhân
+                      {t('navigation.profile')}
                     </Link>
                     <Link
                       to="/orders"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Đơn hàng của tôi
+                      {t('navigation.orders')}
                     </Link>
                     <Link
                       to="/wallet"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Ví điện tử
+                      {t('navigation.wallet')}
                     </Link>
                     <button
                       onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Đăng xuất
+                      {t('navigation.logout')}
                     </button>
                   </div>
                 </div>
@@ -135,14 +140,14 @@ const Header = () => {
                   to="/login"
                   className="text-gray-700 hover:text-primary-600 font-medium"
                 >
-                  Đăng nhập
+                  {t('navigation.login')}
                 </Link>
                 <span className="text-gray-300">|</span>
                 <Link
                   to="/register"
                   className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
                 >
-                  Đăng ký
+                  {t('navigation.register')}
                 </Link>
               </div>
             )}
@@ -170,7 +175,7 @@ const Header = () => {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="Tìm kiếm sản phẩm..."
+                    placeholder={t('products.search_placeholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -199,14 +204,14 @@ const Header = () => {
                     className="block px-3 py-2 text-gray-700 hover:text-primary-600 font-medium"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Đăng nhập
+                    {t('navigation.login')}
                   </Link>
                   <Link
                     to="/register"
                     className="block px-3 py-2 text-primary-600 hover:text-primary-700 font-medium"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Đăng ký
+                    {t('navigation.register')}
                   </Link>
                 </div>
               )}

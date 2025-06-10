@@ -21,6 +21,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     { name: 'Khách hàng', href: '/users', icon: UsersIcon },
     { name: 'Khuyến mãi', href: '/promotions', icon: TagIcon },
     { name: 'Thống kê', href: '/analytics', icon: ChartBarIcon },
+    { name: 'Website', href: '/website-settings', icon: CogIcon },
     { name: 'Cài đặt', href: '/settings', icon: CogIcon },
   ];
 

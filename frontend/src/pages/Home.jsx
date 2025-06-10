@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
 import { getFeaturedProducts } from '../store/slices/productSlice';
 import {
   ChevronLeftIcon,
@@ -19,6 +20,8 @@ const Home = () => {
   const dispatch = useDispatch();
   const { featuredProducts, isLoading } = useSelector((state) => state.products);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [websiteSettings, setWebsiteSettings] = useState(null);
+  const { t } = useTranslation();
 
   const bannerSlides = [
     {
@@ -125,21 +128,37 @@ const Home = () => {
 
   useEffect(() => {
     dispatch(getFeaturedProducts(8));
+    fetchWebsiteSettings();
   }, [dispatch]);
 
+  const fetchWebsiteSettings = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/website-settings');
+      const data = await response.json();
+      if (data.success) {
+        setWebsiteSettings(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching website settings:', error);
+    }
+  };
+
   useEffect(() => {
+    const slides = websiteSettings?.banner_slides?.filter(slide => slide.is_active) || bannerSlides;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, [bannerSlides.length]);
+  }, [websiteSettings, bannerSlides.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
+    const slides = websiteSettings?.banner_slides?.filter(slide => slide.is_active) || bannerSlides;
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + bannerSlides.length) % bannerSlides.length);
+    const slides = websiteSettings?.banner_slides?.filter(slide => slide.is_active) || bannerSlides;
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   const renderStars = (rating) => {
@@ -154,14 +173,14 @@ const Home = () => {
   return (
     <div>
       <Helmet>
-        <title>HN FOOD - Trang chủ</title>
-        <meta name="description" content="Thực phẩm sạch, sản phẩm chăm sóc sức khỏe chất lượng cao với thanh toán VietQR tiện lợi" />
+        <title>{websiteSettings?.site_name || 'HN FOOD'} - {t('homepage.hero_title')}</title>
+        <meta name="description" content={websiteSettings?.site_description || t('homepage.hero_subtitle')} />
       </Helmet>
 
       {/* Hero Banner Slider */}
       <section className="relative h-[600px] overflow-hidden">
         <div className="absolute inset-0">
-          {bannerSlides.map((slide, index) => (
+          {(websiteSettings?.banner_slides?.filter(slide => slide.is_active) || bannerSlides).map((slide, index) => (
             <div
               key={slide.id}
               className={`absolute inset-0 transition-opacity duration-1000 ${
@@ -193,10 +212,10 @@ const Home = () => {
                         {slide.description}
                       </p>
                       <Link
-                        to={slide.link}
+                        to={slide.cta_link || slide.link}
                         className="inline-block bg-primary-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-lg"
                       >
-                        {slide.cta}
+                        {slide.cta_text || slide.cta}
                       </Link>
                     </div>
                   </div>
@@ -222,7 +241,7 @@ const Home = () => {
 
         {/* Slide indicators */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {bannerSlides.map((_, index) => (
+          {(websiteSettings?.banner_slides?.filter(slide => slide.is_active) || bannerSlides).map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
@@ -239,18 +258,25 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Ưu điểm vượt trội của HN FOOD
+              {t('homepage.company_advantages')}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Chúng tôi tự hào là đơn vị tiên phong trong lĩnh vực thực phẩm sạch và chăm sóc sức khỏe
+              {t('homepage.company_advantages')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {companyAdvantages.map((advantage, index) => (
+            {(websiteSettings?.company_advantages?.filter(adv => adv.is_active) || companyAdvantages).map((advantage, index) => (
               <div key={index} className="text-center group hover:transform hover:scale-105 transition-all duration-300">
-                <div className={`w-20 h-20 ${advantage.bgColor} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg transition-all`}>
-                  <advantage.icon className={`w-10 h-10 ${advantage.color}`} />
+                <div className={`w-20 h-20 ${advantage.bg_color || advantage.bgColor} rounded-full flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg transition-all`}>
+                  {advantage.icon ? (
+                    React.createElement(
+                      require('@heroicons/react/24/outline')[advantage.icon] || advantage.icon,
+                      { className: `w-10 h-10 ${advantage.color}` }
+                    )
+                  ) : (
+                    <advantage.icon className={`w-10 h-10 ${advantage.color}`} />
+                  )}
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-gray-900">{advantage.title}</h3>
                 <p className="text-gray-600 leading-relaxed">
@@ -263,8 +289,8 @@ const Home = () => {
           {/* Certifications */}
           <div className="mt-16 bg-gray-50 rounded-2xl p-8">
             <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Chứng nhận chất lượng</h3>
-              <p className="text-gray-600">Được công nhận bởi các tổ chức uy tín trong và ngoài nước</p>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('homepage.certifications')}</h3>
+              <p className="text-gray-600">{t('homepage.certifications_desc')}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {['ISO 22000', 'HACCP', 'FDA', 'ORGANIC'].map((cert, index) => (
@@ -357,7 +383,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {customerReviews.map((review) => (
+            {(websiteSettings?.customer_reviews?.filter(review => review.is_active) || customerReviews).map((review) => (
               <div key={review.id} className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
                 <div className="flex items-center mb-4">
                   <img
@@ -390,19 +416,27 @@ const Home = () => {
           <div className="mt-12 bg-white rounded-2xl p-8 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
               <div>
-                <div className="text-3xl font-bold text-primary-600 mb-2">10,000+</div>
+                <div className="text-3xl font-bold text-primary-600 mb-2">
+                  {websiteSettings?.total_customers || '10,000+'}
+                </div>
                 <p className="text-gray-600">Khách hàng tin tưởng</p>
               </div>
               <div>
-                <div className="text-3xl font-bold text-primary-600 mb-2">15+</div>
+                <div className="text-3xl font-bold text-primary-600 mb-2">
+                  {websiteSettings?.countries_exported || '15+'}
+                </div>
                 <p className="text-gray-600">Quốc gia xuất khẩu</p>
               </div>
               <div>
-                <div className="text-3xl font-bold text-primary-600 mb-2">99.8%</div>
+                <div className="text-3xl font-bold text-primary-600 mb-2">
+                  {websiteSettings?.satisfaction_rate || '99.8%'}
+                </div>
                 <p className="text-gray-600">Khách hàng hài lòng</p>
               </div>
               <div>
-                <div className="text-3xl font-bold text-primary-600 mb-2">24/7</div>
+                <div className="text-3xl font-bold text-primary-600 mb-2">
+                  {websiteSettings?.support_hours || '24/7'}
+                </div>
                 <p className="text-gray-600">Hỗ trợ khách hàng</p>
               </div>
             </div>
