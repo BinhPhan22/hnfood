@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="description" content="HN FOOD - Website bán hàng thực phẩm sạch, sản phẩm chăm sóc sức khỏe với thanh toán VietQR tiện lợi" />
+    <meta name="keywords" content="HN FOOD, thực phẩm sạch, sức khỏe, VietQR, thanh toán QR, thực phẩm hữu cơ" />
+    <meta name="author" content="HN FOOD Team" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hnfood.vn/" />
+    <meta property="og:title" content="HN FOOD - Thực phẩm sạch cho sức khỏe" />
+    <meta property="og:description" content="Mua sắm thực phẩm hữu cơ, sản phẩm chăm sóc sức khỏe tại HN FOOD. Thanh toán VietQR, COD, chuyển khoản." />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://hnfood.vn/" />
+    <meta property="twitter:title" content="HN FOOD - Thực phẩm sạch cho sức khỏe" />
+    <meta property="twitter:description" content="Mua sắm thực phẩm hữu cơ, sản phẩm chăm sóc sức khỏe tại HN FOOD. Thanh toán VietQR, COD, chuyển khoản." />
+    <meta property="twitter:image" content="%PUBLIC_URL%/og-image.jpg" />
+
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "HN FOOD",
+      "url": "https://hnfood.vn",
+      "logo": "https://hnfood.vn/logo.png",
+      "description": "Cửa hàng thực phẩm sạch và sản phẩm chăm sóc sức khỏe",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "174 CMT8",
+        "addressLocality": "Biên Hòa",
+        "addressRegion": "Đồng Nai",
+        "addressCountry": "VN"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+84-123-456-789",
+        "contactType": "customer service"
+      }
+    }
+    </script>
+    
+    <title>HN FOOD - Thực phẩm sạch cho sức khỏe</title>
+  </head>
+  <body>
+    <noscript>Bạn cần bật JavaScript để chạy ứng dụng này.</noscript>
+    <div id="root"></div>
+    
+    <!-- Dialogflow Messenger -->
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger
+      intent="WELCOME"
+      chat-title="HN FOOD Hỗ trợ"
+      agent-id="your-dialogflow-agent-id"
+      language-code="vi"
+      chat-icon="https://hnfood.vn/chatbot-icon.png">
+    </df-messenger>
+    
+    <style>
+      df-messenger {
+        --df-messenger-bot-message: #0ea5e9;
+        --df-messenger-button-titlebar-color: #0ea5e9;
+        --df-messenger-chat-background-color: #fafafa;
+        --df-messenger-font-color: white;
+        --df-messenger-send-icon: #0ea5e9;
+        --df-messenger-user-message: #479761;
+      }
+    </style>
+  </body>
+</html>
