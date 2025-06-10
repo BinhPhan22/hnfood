@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   MagnifyingGlassIcon,
   UserIcon,
   EnvelopeIcon,
@@ -8,7 +8,10 @@ import {
   CurrencyDollarIcon,
   ShoppingCartIcon,
   ArrowDownTrayIcon,
-  EyeIcon
+  EyeIcon,
+  PencilIcon,
+  StarIcon,
+  WalletIcon
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -20,6 +23,12 @@ const Users = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showUserDetail, setShowUserDetail] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    points: '',
+    wallet: '',
+    reason: ''
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -27,8 +36,17 @@ const Users = () => {
 
   const fetchUsers = async () => {
     try {
-      // Simulate API call with sample data
-      setTimeout(() => {
+      const response = await fetch('http://localhost:5001/api/users/admin/users', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setUsers(data.data.users);
+      } else {
+        // Fallback to sample data if API fails
         const sampleUsers = [
           {
             _id: '1',
@@ -112,8 +130,8 @@ const Users = () => {
           }
         ];
         setUsers(sampleUsers);
-        setLoading(false);
-      }, 1000);
+      }
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Lỗi khi tải danh sách khách hàng');
@@ -171,6 +189,82 @@ const Users = () => {
   const showUserDetails = (user) => {
     setSelectedUser(user);
     setShowUserDetail(true);
+  };
+
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setEditForm({
+      points: user.loyalty_points.toString(),
+      wallet: user.wallet_balance.toString(),
+      reason: ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdatePoints = async () => {
+    if (!selectedUser || !editForm.points) {
+      toast.error('Vui lòng nhập số điểm');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/users/admin/users/${selectedUser._id}/points`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          points: parseInt(editForm.points),
+          reason: editForm.reason || 'Admin cập nhật điểm'
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(data.message);
+        fetchUsers();
+        setShowEditModal(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error updating points:', error);
+      toast.error('Lỗi khi cập nhật điểm');
+    }
+  };
+
+  const handleUpdateWallet = async () => {
+    if (!selectedUser || !editForm.wallet) {
+      toast.error('Vui lòng nhập số dư ví');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/users/admin/users/${selectedUser._id}/wallet`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          amount: parseInt(editForm.wallet),
+          reason: editForm.reason || 'Admin cập nhật số dư ví'
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(data.message);
+        fetchUsers();
+        setShowEditModal(false);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error updating wallet:', error);
+      toast.error('Lỗi khi cập nhật ví');
+    }
   };
 
   if (loading) {
@@ -314,13 +408,13 @@ const Users = () => {
                   Liên hệ
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Điểm thưởng
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Số dư ví
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Vai trò
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Đơn hàng
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Chi tiêu
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Trạng thái
@@ -355,28 +449,29 @@ const Users = () => {
                     <div className="text-sm text-gray-500">{user.phone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <StarIcon className="h-4 w-4 text-yellow-500 mr-1" />
+                      <span className="text-sm font-medium text-gray-900">
+                        {user.loyalty_points ? user.loyalty_points.toLocaleString('vi-VN') : '0'} điểm
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <WalletIcon className="h-4 w-4 text-green-500 mr-1" />
+                      <span className="text-sm font-medium text-gray-900">
+                        {user.wallet_balance ? user.wallet_balance.toLocaleString('vi-VN') : '0'} VND
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      user.role === 'admin' 
-                        ? 'bg-red-100 text-red-800' 
+                      user.role === 'admin'
+                        ? 'bg-red-100 text-red-800'
                         : 'bg-blue-100 text-blue-800'
                     }`}>
                       {user.role === 'admin' ? 'Quản trị viên' : 'Khách hàng'}
                     </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <ShoppingCartIcon className="h-4 w-4 text-gray-400 mr-1" />
-                      {user.total_orders}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    <div className="flex items-center">
-                      <CurrencyDollarIcon className="h-4 w-4 text-gray-400 mr-1" />
-                      {user.total_spent.toLocaleString('vi-VN')} VND
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      Ví: {user.wallet_balance.toLocaleString('vi-VN')} VND
-                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <button
@@ -391,12 +486,22 @@ const Users = () => {
                     </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => showUserDetails(user)}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <EyeIcon className="h-5 w-5" />
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => showUserDetails(user)}
+                        className="text-blue-600 hover:text-blue-900"
+                        title="Xem chi tiết"
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleEditUser(user)}
+                        className="text-green-600 hover:text-green-900"
+                        title="Chỉnh sửa điểm và ví"
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -486,6 +591,85 @@ const Users = () => {
                     Đăng nhập lần cuối: {new Date(selectedUser.last_login).toLocaleString('vi-VN')}
                   </p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-md w-full mx-4">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Chỉnh sửa: {selectedUser.name}
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Điểm thưởng
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.points}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, points: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Hiện tại: {selectedUser.loyalty_points ? selectedUser.loyalty_points.toLocaleString('vi-VN') : '0'} điểm
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số dư ví (VND)
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.wallet}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, wallet: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Hiện tại: {selectedUser.wallet_balance ? selectedUser.wallet_balance.toLocaleString('vi-VN') : '0'} VND
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Lý do thay đổi
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.reason}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, reason: e.target.value }))}
+                    placeholder="Nhập lý do..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  Hủy
+                </button>
+                <button
+                  onClick={handleUpdatePoints}
+                  className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700"
+                >
+                  Cập nhật điểm
+                </button>
+                <button
+                  onClick={handleUpdateWallet}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                >
+                  Cập nhật ví
+                </button>
               </div>
             </div>
           </div>
