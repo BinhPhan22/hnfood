@@ -12,6 +12,7 @@ import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import Payment from './pages/Payment';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
@@ -67,7 +68,12 @@ function App() {
               <OrderDetail />
             </ProtectedRoute>
           } />
-          
+          <Route path="/payment/:orderId" element={
+            <ProtectedRoute>
+              <Payment />
+            </ProtectedRoute>
+          } />
+
           {/* 404 page */}
           <Route path="*" element={<NotFound />} />
         </Routes>

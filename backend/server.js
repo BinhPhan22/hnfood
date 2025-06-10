@@ -80,6 +80,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/vietqr', vietqrRoutes);
+app.use('/api/payment', require('./routes/payment'));
 app.use('/api/promotions', promotionRoutes);
 app.use('/api/admin', adminRoutes);
 

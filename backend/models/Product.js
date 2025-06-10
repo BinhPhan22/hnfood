@@ -37,7 +37,6 @@ const ProductSchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    required: true,
     unique: true
   },
   is_featured: {
@@ -56,17 +55,14 @@ const ProductSchema = new mongoose.Schema({
 
 // Create slug from name
 ProductSchema.pre('save', function(next) {
-  if (!this.isModified('name')) {
-    next();
-    return;
+  if (!this.slug || this.isModified('name')) {
+    this.slug = slugify(this.name, {
+      lower: true,
+      strict: true,
+      locale: 'vi'
+    });
   }
-  
-  this.slug = slugify(this.name, {
-    lower: true,
-    strict: true,
-    locale: 'vi'
-  });
-  
+
   next();
 });
 
