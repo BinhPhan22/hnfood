@@ -36,23 +36,23 @@ Mở file `.env` và cập nhật các thông tin sau:
 
 ```env
 # Database
-MONGODB_URI=mongodb+srv://your_username:your_password@cluster0.mongodb.net/hnfood
+MONGODB_URI=mongodb+srv://binhbiophan:TkOf0Qf4FGgarp0X@cluster0.zayigzt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 
 # JWT Secret (tạo một chuỗi ngẫu nhiên dài)
 JWT_SECRET=your_super_secret_jwt_key_here
 
 # VietQR (đăng ký tại https://vietqr.io)
-VIETQR_API_KEY=your_vietqr_api_key
-BANK_ACCOUNT_NUMBER=your_bank_account_number
+VIETQR_API_KEY=f4dda95e-55ce-4673-95b7-2c2edeed185f
+BANK_ACCOUNT_NUMBER=2206866868
 
 # Cloudinary (đăng ký tại https://cloudinary.com)
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_CLOUD_NAME=ddqts08nd
+CLOUDINARY_API_KEY=985666271673227
+CLOUDINARY_API_SECRET=twpJlfoERFlb7fwMRpSsphtoWpA
 
 # Email (sử dụng Gmail App Password)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
+EMAIL_USER=binh.biophan@gmail.com
+EMAIL_PASS=Binh@123
 ```
 
 ### 2.5 Chạy server backend
