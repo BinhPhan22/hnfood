@@ -5,7 +5,7 @@ const Product = require('../models/Product');
 // @access  Public
 exports.getProducts = async (req, res) => {
   try {
-    const { category, keyword, min_price, max_price, sort, featured } = req.query;
+    const { category, keyword, min_price, max_price, sort, featured, lang } = req.query;
     
     // Build query
     let query = { is_active: true };
@@ -20,13 +20,23 @@ exports.getProducts = async (req, res) => {
       query.is_featured = true;
     }
     
-    // Search by keyword
+    // Search by keyword (support both languages)
     if (keyword) {
-      query.$or = [
+      const searchFields = [
         { name: { $regex: keyword, $options: 'i' } },
         { description: { $regex: keyword, $options: 'i' } },
         { seo_keywords: { $in: [new RegExp(keyword, 'i')] } }
       ];
+
+      // Add English fields if they exist
+      if (lang === 'en') {
+        searchFields.push(
+          { name_en: { $regex: keyword, $options: 'i' } },
+          { description_en: { $regex: keyword, $options: 'i' } }
+        );
+      }
+
+      query.$or = searchFields;
     }
     
     // Filter by price range
@@ -69,14 +79,27 @@ exports.getProducts = async (req, res) => {
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
-    
+
+    // Transform products based on language
+    const transformedProducts = products.map(product => {
+      const productObj = product.toObject();
+
+      if (lang === 'en') {
+        // Use English fields if available, fallback to Vietnamese
+        productObj.name = productObj.name_en || productObj.name;
+        productObj.description = productObj.description_en || productObj.description;
+      }
+
+      return productObj;
+    });
+
     // Get total count for pagination
     const total = await Product.countDocuments(query);
-    
+
     res.json({
       success: true,
       data: {
-        products,
+        products: transformedProducts,
         page,
         pages: Math.ceil(total / limit),
         total
@@ -96,24 +119,33 @@ exports.getProducts = async (req, res) => {
 // @access  Public
 exports.getProductById = async (req, res) => {
   try {
+    const { lang } = req.query;
     const product = await Product.findById(req.params.id);
-    
+
     if (product && product.is_active) {
+      const productObj = product.toObject();
+
+      if (lang === 'en') {
+        // Use English fields if available, fallback to Vietnamese
+        productObj.name = productObj.name_en || productObj.name;
+        productObj.description = productObj.description_en || productObj.description;
+      }
+
       res.json({
         success: true,
-        data: product
+        data: productObj
       });
     } else {
-      res.status(404).json({ 
+      res.status(404).json({
         success: false,
-        message: 'Không tìm thấy sản phẩm' 
+        message: 'Không tìm thấy sản phẩm'
       });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Lỗi server' 
+      message: 'Lỗi server'
     });
   }
 };

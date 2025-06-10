@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
+import {
   HomeIcon,
   ShoppingBagIcon,
   ShoppingCartIcon,
@@ -8,7 +8,8 @@ import {
   TagIcon,
   ChartBarIcon,
   CogIcon,
-  XMarkIcon
+  XMarkIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -22,6 +23,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     { name: 'Khuyến mãi', href: '/promotions', icon: TagIcon },
     { name: 'Thống kê', href: '/analytics', icon: ChartBarIcon },
     { name: 'Website', href: '/website-settings', icon: CogIcon },
+    { name: 'Chatbot AI', href: '/chatbot-settings', icon: ChatBubbleLeftRightIcon },
     { name: 'Cài đặt', href: '/settings', icon: CogIcon },
   ];
 

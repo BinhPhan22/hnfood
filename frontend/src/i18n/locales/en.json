@@ -36,7 +36,8 @@
     "upload": "Upload",
     "print": "Print",
     "export": "Export",
-    "import": "Import"
+    "import": "Import",
+    "showing": "Showing"
   },
   "navigation": {
     "home": "Home",
@@ -117,7 +118,8 @@
     "quantity": "Quantity",
     "total": "Total",
     "no_products": "No products found",
-    "loading_products": "Loading products..."
+    "loading_products": "Loading products...",
+    "items": "items"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -138,7 +140,8 @@
     "discount": "Discount",
     "coupon_code": "Coupon Code",
     "apply_coupon": "Apply",
-    "free_shipping_threshold": "Add {{amount}} more for free shipping"
+    "free_shipping_threshold": "Add {{amount}} more for free shipping",
+    "item_added": "Item added to cart"
   },
   "checkout": {
     "title": "Checkout",

@@ -7,6 +7,10 @@ const ProductSchema = new mongoose.Schema({
     required: [true, 'Vui lòng nhập tên sản phẩm'],
     trim: true
   },
+  name_en: {
+    type: String,
+    trim: true
+  },
   price: {
     type: Number,
     required: [true, 'Vui lòng nhập giá sản phẩm'],
@@ -15,6 +19,9 @@ const ProductSchema = new mongoose.Schema({
   description: {
     type: String,
     required: [true, 'Vui lòng nhập mô tả sản phẩm']
+  },
+  description_en: {
+    type: String
   },
   images: {
     type: [String],

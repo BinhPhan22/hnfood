@@ -19,6 +19,7 @@ import PromotionForm from './pages/PromotionForm';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import WebsiteSettings from './pages/WebsiteSettings';
+import ChatbotSettings from './pages/ChatbotSettings';
 
 // Protected route component
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -75,6 +76,9 @@ function App() {
 
           {/* Website Settings */}
           <Route path="website-settings" element={<WebsiteSettings />} />
+
+          {/* Chatbot Settings */}
+          <Route path="chatbot-settings" element={<ChatbotSettings />} />
 
           {/* Settings */}
           <Route path="settings" element={<Settings />} />

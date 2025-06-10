@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 // Layout components
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
+import Chatbot from './components/common/Chatbot';
 
 // Pages
 import Home from './pages/Home';
@@ -96,6 +97,9 @@ function App() {
       </main>
       
       <Footer />
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 }

@@ -36,7 +36,8 @@
     "upload": "Tải lên",
     "print": "In",
     "export": "Xuất",
-    "import": "Nhập"
+    "import": "Nhập",
+    "showing": "Hiển thị"
   },
   "navigation": {
     "home": "Trang chủ",
@@ -117,7 +118,8 @@
     "quantity": "Số lượng",
     "total": "Tổng cộng",
     "no_products": "Không tìm thấy sản phẩm nào",
-    "loading_products": "Đang tải sản phẩm..."
+    "loading_products": "Đang tải sản phẩm...",
+    "items": "sản phẩm"
   },
   "cart": {
     "title": "Giỏ hàng",
@@ -138,7 +140,8 @@
     "discount": "Giảm giá",
     "coupon_code": "Mã giảm giá",
     "apply_coupon": "Áp dụng",
-    "free_shipping_threshold": "Mua thêm {{amount}} để được miễn phí vận chuyển"
+    "free_shipping_threshold": "Mua thêm {{amount}} để được miễn phí vận chuyển",
+    "item_added": "Đã thêm sản phẩm vào giỏ hàng"
   },
   "checkout": {
     "title": "Thanh toán",
