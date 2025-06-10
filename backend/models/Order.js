@@ -38,14 +38,30 @@ const OrderSchema = new mongoose.Schema({
       required: true
     }
   },
+  subtotal: {
+    type: Number,
+    required: true
+  },
+  shipping_fee: {
+    type: Number,
+    default: 0
+  },
   total_amount: {
     type: Number,
     required: true
   },
   payment_method: {
     type: String,
-    enum: ['vietqr', 'bank_transfer', 'cod'],
+    enum: ['vietqr', 'bank_transfer', 'cod', 'points', 'wallet'],
     required: true
+  },
+  points_used: {
+    type: Number,
+    default: 0
+  },
+  points_value: {
+    type: Number,
+    default: 0
   },
   payment_status: {
     type: String,

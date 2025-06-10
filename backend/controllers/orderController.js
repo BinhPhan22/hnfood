@@ -2,43 +2,49 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Promotion = require('../models/Promotion');
+const SystemSettings = require('../models/SystemSettings');
+const PointsService = require('../services/pointsService');
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Public
 exports.createOrder = async (req, res) => {
   try {
-    const { 
-      products, 
-      shipping_info, 
-      payment_method, 
-      promotion_code 
+    const {
+      products,
+      shipping_info,
+      payment_method,
+      promotion_code,
+      use_points = false
     } = req.body;
     
-    // Validate products and calculate total
-    let total_amount = 0;
+    // Get system settings
+    const settings = await SystemSettings.getSettings();
+
+    // Validate products and calculate subtotal
+    let subtotal = 0;
     const orderProducts = [];
-    
+
     for (const item of products) {
       const product = await Product.findById(item.product);
-      
+
       if (!product || !product.is_active) {
         return res.status(400).json({
           success: false,
           message: `Sản phẩm ${item.product} không tồn tại hoặc đã ngừng bán`
         });
       }
-      
-      if (product.stock < item.quantity) {
+
+      if (product.stock_quantity < item.quantity) {
         return res.status(400).json({
           success: false,
           message: `Sản phẩm ${product.name} không đủ số lượng trong kho`
         });
       }
-      
+
       const itemTotal = product.price * item.quantity;
-      total_amount += itemTotal;
-      
+      subtotal += itemTotal;
+
       orderProducts.push({
         product: product._id,
         quantity: item.quantity,
@@ -50,10 +56,10 @@ exports.createOrder = async (req, res) => {
     let discount_amount = 0;
     if (promotion_code) {
       const promotion = await Promotion.findOne({ code: promotion_code.toUpperCase() });
-      
+
       if (promotion && promotion.isValid()) {
-        discount_amount = promotion.calculateDiscount(total_amount);
-        
+        discount_amount = promotion.calculateDiscount(subtotal);
+
         if (discount_amount > 0) {
           // Update promotion usage
           promotion.current_uses += 1;
@@ -61,17 +67,54 @@ exports.createOrder = async (req, res) => {
         }
       }
     }
-    
-    const final_amount = total_amount - discount_amount;
+
+    // Calculate shipping fee
+    const discounted_subtotal = subtotal - discount_amount;
+    let shipping_fee = 0;
+
+    if (discounted_subtotal < settings.free_shipping_threshold) {
+      shipping_fee = settings.shipping_fee;
+    }
+
+    const total_amount = discounted_subtotal + shipping_fee;
+
+    // Handle points payment
+    let points_used = 0;
+    let points_value = 0;
+
+    if (use_points && payment_method === 'points') {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Cần đăng nhập để thanh toán bằng điểm'
+        });
+      }
+
+      const affordability = await PointsService.canAffordWithPoints(req.user._id, total_amount);
+
+      if (!affordability.canAfford) {
+        return res.status(400).json({
+          success: false,
+          message: `Không đủ điểm. Cần ${affordability.pointsNeeded} điểm, có ${affordability.pointsAvailable} điểm`
+        });
+      }
+
+      points_used = affordability.pointsNeeded;
+      points_value = total_amount;
+    }
     
     // Create order
     const orderData = {
       products: orderProducts,
       shipping_info,
-      total_amount: final_amount,
+      subtotal,
+      shipping_fee,
+      total_amount,
       payment_method,
       promotion_code: promotion_code || null,
-      discount_amount
+      discount_amount,
+      points_used,
+      points_value
     };
     
     // Add user if authenticated
@@ -80,12 +123,30 @@ exports.createOrder = async (req, res) => {
     }
     
     const order = await Order.create(orderData);
-    
+
+    // Deduct points if using points payment
+    if (use_points && payment_method === 'points') {
+      const pointsResult = await PointsService.deductPointsForPurchase(
+        req.user._id,
+        total_amount,
+        order._id
+      );
+
+      if (!pointsResult.success) {
+        // Rollback order creation
+        await Order.findByIdAndDelete(order._id);
+        return res.status(400).json({
+          success: false,
+          message: pointsResult.error
+        });
+      }
+    }
+
     // Update product stock
     for (const item of products) {
       await Product.findByIdAndUpdate(
         item.product,
-        { $inc: { stock: -item.quantity } }
+        { $inc: { stock_quantity: -item.quantity } }
       );
     }
     

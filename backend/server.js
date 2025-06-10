@@ -82,8 +82,9 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/vietqr', vietqrRoutes);
 app.use('/api/payment', require('./routes/payment'));
 app.use('/api/website-settings', require('./routes/websiteSettings'));
-app.use('/api/chatbot', require('./routes/chatbot'));
-app.use('/api/translation', require('./routes/translation'));
+app.use('/api/wallet', require('./routes/wallet'));
+// app.use('/api/chatbot', require('./routes/chatbot'));
+// app.use('/api/translation', require('./routes/translation'));
 app.use('/api/promotions', promotionRoutes);
 app.use('/api/admin', adminRoutes);
 

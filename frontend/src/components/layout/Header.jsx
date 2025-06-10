@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -7,14 +7,18 @@ import {
   UserIcon,
   Bars3Icon,
   XMarkIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  WalletIcon,
+  StarIcon
 } from '@heroicons/react/24/outline';
 import { logout } from '../../store/slices/authSlice';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import walletService from '../../services/walletService';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [walletBalance, setWalletBalance] = useState(null);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,6 +26,23 @@ const Header = () => {
 
   const { user } = useSelector((state) => state.auth);
   const { itemCount } = useSelector((state) => state.cart);
+
+  useEffect(() => {
+    if (user) {
+      fetchWalletBalance();
+    }
+  }, [user]);
+
+  const fetchWalletBalance = async () => {
+    try {
+      const response = await walletService.getBalance();
+      if (response.success) {
+        setWalletBalance(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+    }
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -86,6 +107,30 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             {/* Language Switcher */}
             <LanguageSwitcher />
+
+            {/* Wallet Balance (for logged in users) */}
+            {user && walletBalance && (
+              <Link
+                to="/wallet"
+                className="hidden md:flex items-center space-x-2 px-3 py-1 bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-200 rounded-lg hover:from-primary-100 hover:to-secondary-100 transition-all"
+              >
+                <WalletIcon className="h-4 w-4 text-primary-600" />
+                <span className="text-sm font-medium text-primary-700">
+                  {new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                    maximumFractionDigits: 0
+                  }).format(walletBalance.walletBalance)}
+                </span>
+                <div className="flex items-center space-x-1">
+                  <StarIcon className="h-3 w-3 text-yellow-500" />
+                  <span className="text-xs text-yellow-600">
+                    {walletBalance.points.toLocaleString('vi-VN')}
+                  </span>
+                </div>
+              </Link>
+            )}
+
             {/* Cart */}
             <Link to="/cart" className="relative p-2 text-gray-700 hover:text-primary-600">
               <ShoppingCartIcon className="h-6 w-6" />
