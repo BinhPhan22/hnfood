@@ -75,24 +75,24 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Hỗ trợ khách hàng</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/return-policy" className="text-gray-300 hover:text-white transition-colors">
                   Chính sách đổi trả
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/payment-guide" className="text-gray-300 hover:text-white transition-colors">
                   Hướng dẫn thanh toán
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/faq" className="text-gray-300 hover:text-white transition-colors">
                   Câu hỏi thường gặp
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                <Link to="/terms" className="text-gray-300 hover:text-white transition-colors">
                   Điều khoản sử dụng
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

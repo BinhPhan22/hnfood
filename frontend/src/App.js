@@ -21,6 +21,11 @@ import OrderDetail from './pages/OrderDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
+import Wallet from './pages/Wallet';
+import ReturnPolicy from './pages/ReturnPolicy';
+import PaymentGuide from './pages/PaymentGuide';
+import FAQ from './pages/FAQ';
+import TermsOfService from './pages/TermsOfService';
 
 // Protected route component
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -73,6 +78,17 @@ function App() {
               <Payment />
             </ProtectedRoute>
           } />
+          <Route path="/wallet" element={
+            <ProtectedRoute>
+              <Wallet />
+            </ProtectedRoute>
+          } />
+
+          {/* Policy pages */}
+          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/payment-guide" element={<PaymentGuide />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/terms" element={<TermsOfService />} />
 
           {/* 404 page */}
           <Route path="*" element={<NotFound />} />
